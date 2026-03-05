@@ -1,10 +1,20 @@
 import request from "supertest";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 import app from "../src/app.js";
+import connectDB from "../src/config/db.js";
+
+import User from "../src/models/User.js";
+
+dotenv.config();
 
 let token;
 let taskId;
 
 beforeAll(async () => {
+  await connectDB();
+  // Clear the test user if it exists
+  await User.deleteMany({ email: "task@example.com" });
   // Register
   await request(app)
     .post("/api/auth/register")
@@ -23,6 +33,10 @@ beforeAll(async () => {
     });
 
   token = res.body.token;
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });
 
 describe("Task Routes", () => {
