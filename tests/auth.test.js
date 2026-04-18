@@ -1,5 +1,22 @@
 import request from "supertest";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 import app from "../src/app.js";
+import connectDB from "../src/config/db.js";
+
+import User from "../src/models/User.js";
+
+dotenv.config();
+
+beforeAll(async () => {
+  await connectDB();
+  // Clear the test user if it exists
+  await User.deleteMany({ email: "test@example.com" });
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
+});
 
 describe("Auth Routes", () => {
 
